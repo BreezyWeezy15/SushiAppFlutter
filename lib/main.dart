@@ -4,10 +4,13 @@ import 'package:get_storage/get_storage.dart';
 import 'package:sushi_restaurant/pages/auth/auth_gate.dart';
 import 'package:sushi_restaurant/pages/auth/login_or_register.dart';
 import 'package:sushi_restaurant/pages/intro_page.dart';
+import 'package:sushi_restaurant/services/auth/database_service.dart';
 import 'package:sushi_restaurant/services/auth/firebase_service.dart';
 import 'package:sushi_restaurant/storage/storage_helper.dart';
 
 FirebaseService firebaseService = FirebaseService.instance;
+DatabaseService databaseService = DatabaseService.instance;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

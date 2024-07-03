@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseService {
@@ -8,7 +9,6 @@ class FirebaseService {
   User? isLogged(){
     return _firebaseAuth.currentUser;
   }
-
   Future<UserCredential> loginUser(String email,String password) async {
     try {
       UserCredential userCredential = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
@@ -18,8 +18,6 @@ class FirebaseService {
       throw Exception(e);
     }
   }
-
-
   Future<UserCredential> registerUser(String email,String password) async {
     try {
       UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
@@ -29,8 +27,6 @@ class FirebaseService {
       throw Exception(e);
     }
   }
-
-
   FirebaseService._privateConstructor();
   static FirebaseService instance = FirebaseService._privateConstructor();
 
