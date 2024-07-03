@@ -13,7 +13,15 @@ class DatabaseService {
     return result;
   }
 
+  Future<DocumentSnapshot<Object?>> getFoodDetails(String documentID) async {
+    Future<DocumentSnapshot<Object?>> result = _collectionReference.doc(documentID).get();
+    return result;
+  }
+
   DatabaseService._privateConstructor();
   static DatabaseService instance = DatabaseService._privateConstructor();
+
+
+
 
 }

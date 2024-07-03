@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:sushi_restaurant/components/colors.dart';
 import 'package:sushi_restaurant/components/fonts.dart';
 import 'package:sushi_restaurant/main.dart';
+import 'package:sushi_restaurant/pages/ui/details_page.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -121,43 +122,48 @@ class _HomePageState extends State<HomePage> {
                           ),
                           itemBuilder: (context,index){
                             final data = docs[index].data() as Map<String, dynamic>;
-                            return Card(
-                              color: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              child: Column(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(16),topRight: Radius.circular(16)),
-                                    child:  FadeInImage(
-                                      placeholder: const AssetImage('assets/images/sushi.png'),
-                                      image: NetworkImage(data['image']),
-                                      fadeInDuration: const Duration(seconds: 10),
-                                      height: 150,),
-                                  ),
-                                  Flexible(child:  Padding(
-                                    padding: const EdgeInsets.only(left: 10,right: 15,top: 10),
-                                    child: Text(data['title'],style: getFont().copyWith(fontSize: 18,
-                                        overflow: TextOverflow.ellipsis),),
-                                  )),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 5,right: 5,bottom: 5),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        children: [
-                                          Expanded(child: Text( '\$${data['price']}.00',style: getSerifFont().copyWith(fontSize: 18,
-                                              overflow: TextOverflow.ellipsis),)),
-                                          Row(
-                                            children: [
-                                              const Icon(Icons.star,size: 25,color: Colors.yellowAccent,),
-                                              Text(data['vote'].toString(),style: getSerifFont().copyWith(fontSize: 18),)
-                                            ],
-                                          )
-                                        ],
-                                      ),
+                            return GestureDetector(
+                              onTap: (){
+                                showDetailsScreen(data['foodID']);
+                              },
+                              child: Card(
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                child: Column(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(16),topRight: Radius.circular(16)),
+                                      child:  FadeInImage(
+                                        placeholder: const AssetImage('assets/images/sushi.png'),
+                                        image: NetworkImage(data['image']),
+                                        fadeInDuration: const Duration(seconds: 10),
+                                        height: 150,),
                                     ),
-                                  )
-                                ],
+                                    Flexible(child:  Padding(
+                                      padding: const EdgeInsets.only(left: 10,right: 15,top: 10),
+                                      child: Text(data['title'],style: getFont().copyWith(fontSize: 18,
+                                          overflow: TextOverflow.ellipsis),),
+                                    )),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 5,right: 5,bottom: 5),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                          children: [
+                                            Expanded(child: Text( '\$${data['price']}.00',style: getSerifFont().copyWith(fontSize: 18,
+                                                overflow: TextOverflow.ellipsis),)),
+                                            Row(
+                                              children: [
+                                                const Icon(Icons.star,size: 25,color: Colors.yellowAccent,),
+                                                Text(data['vote'].toString(),style: getSerifFont().copyWith(fontSize: 18),)
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
                             );
                           }),
@@ -169,5 +175,9 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  void showDetailsScreen(String documentID){
+    Navigator.push(context, MaterialPageRoute(builder: (_) => DetailsPage(documentID: documentID)));
   }
 }
