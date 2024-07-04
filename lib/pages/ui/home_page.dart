@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sushi_restaurant/components/colors.dart';
 import 'package:sushi_restaurant/components/fonts.dart';
 import 'package:sushi_restaurant/main.dart';
+import 'package:sushi_restaurant/pages/ui/cart_page.dart';
 import 'package:sushi_restaurant/pages/ui/details_page.dart';
 
 
@@ -15,13 +17,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
+  String query = '';
 
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +28,21 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10,),
-            Center(child: Text('Sushi Mushi',style: getFont().copyWith(fontSize: 25),)),
+            Row(
+              children: [
+                Expanded(child: Text('Sushi Mushi',style: getFont().copyWith(fontSize: 25),textAlign: TextAlign.center,)),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20),
+                  child: IconButton(onPressed: (){
+
+                    Navigator.push(context, 
+                    MaterialPageRoute(builder: (_) => const CartPage()));
+                    
+                  }, icon: const Icon(Icons.add_shopping_cart,size: 25,)),
+                )
+              ],
+            ),
             Container(
               margin: const EdgeInsets.all(20),
               height:  190,
@@ -78,15 +89,23 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(20),
               child: TextField(
                 controller: _searchController,
+                style: getSerifFont().copyWith(fontSize: 15),
+                onChanged: (value){
+                  setState(() {
+                    query = value;
+                  });
+                },
                 decoration: InputDecoration(
+                  hintText: 'Look for sushi..',
+                  hintStyle: getSerifFont().copyWith(fontSize: 15),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
                     borderSide: const BorderSide(color: Colors.black45)
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: Colors.blue)
-                  )
+                    borderSide: const BorderSide(color: Colors.black)
+                  ),
                 ),
               ),
             ),
@@ -95,8 +114,8 @@ class _HomePageState extends State<HomePage> {
               child: Text('Food Menu',style: getSerifFont().copyWith(fontSize: 20)),
             ),
             Expanded(
-              child: FutureBuilder<QuerySnapshot>(
-                future: databaseService.getFood(),
+              child: FutureBuilder<List<DocumentSnapshot>>(
+                future: databaseService.getFood(query),
                   builder: (context, snapshot){
 
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -104,11 +123,11 @@ class _HomePageState extends State<HomePage> {
                     }
 
                     if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
+                      return Center(child: Text('No Sushis Found..',style: getSerifFont().copyWith(fontSize: 20),));
                     }
 
                     // LOAD DATA
-                    final docs = snapshot.data?.docs ?? [];
+                    final docs = snapshot.data  ?? [];
 
                     return Padding(
                       padding: const EdgeInsets.all(15),
@@ -122,9 +141,12 @@ class _HomePageState extends State<HomePage> {
                           ),
                           itemBuilder: (context,index){
                             final data = docs[index].data() as Map<String, dynamic>;
+
                             return GestureDetector(
                               onTap: (){
-                                showDetailsScreen(data['foodID']);
+                                showDetailsScreen(
+                                    data['addons'],
+                                    data['foodID']);
                               },
                               child: Card(
                                 color: Colors.white,
@@ -134,6 +156,7 @@ class _HomePageState extends State<HomePage> {
                                     ClipRRect(
                                       borderRadius: const BorderRadius.only(topLeft: Radius.circular(16),topRight: Radius.circular(16)),
                                       child:  FadeInImage(
+                                        placeholderFit: BoxFit.scaleDown,
                                         placeholder: const AssetImage('assets/images/sushi.png'),
                                         image: NetworkImage(data['image']),
                                         fadeInDuration: const Duration(seconds: 10),
@@ -177,7 +200,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void showDetailsScreen(String documentID){
-    Navigator.push(context, MaterialPageRoute(builder: (_) => DetailsPage(documentID: documentID)));
+  void showDetailsScreen(List<dynamic> addons , String documentID){
+    Navigator.push(context, MaterialPageRoute(builder: (_) => DetailsPage(
+        addons: addons,
+        documentID: documentID)));
   }
 }

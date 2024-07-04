@@ -1,7 +1,9 @@
 
+
+
 class Addon {
   String name;
-  double price;
+  String price;
 
   Addon({required this.name,required this.price});
 }
