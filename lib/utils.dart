@@ -1,0 +1,5 @@
+
+class Utils {
+  static String publishableKey = "pk_test_51IVasBFP6YK87V1sCbMrswWJDG0nl4qdHUBsvzWqbDAKS4UwPTL5MKR1hulV26gQTYgRFPsZqk9zlg0Cw7RCA0Vc00Lzgmtm5n";
+  static String secretKey = "sk_test_51IVasBFP6YK87V1sTrKbMuwQYmPC6ykldO9fbabCoZQ2O7BjpHuleUECnJ5KWr5BpTBRR3Ji77801GUxIUc3Bjbx00RHTmROSZ";
+}

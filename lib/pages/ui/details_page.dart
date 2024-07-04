@@ -50,8 +50,8 @@ class _DetailsPageState extends State<DetailsPage> {
             }
 
             // LOAD DATA
-            final docs = snapshot.data?.data() ?? [];
-            final data = docs as Map<String, dynamic> ?? {};
+            final docs = snapshot.data?.data();
+            Map<String, dynamic> data = docs != null ? docs as Map<String, dynamic> : {};
 
 
             return Stack(
