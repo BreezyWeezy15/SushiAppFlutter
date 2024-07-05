@@ -6,6 +6,7 @@ import 'package:sushi_restaurant/components/fonts.dart';
 import 'package:sushi_restaurant/main.dart';
 import 'package:sushi_restaurant/pages/ui/cart_page.dart';
 import 'package:sushi_restaurant/pages/ui/details_page.dart';
+import 'package:sushi_restaurant/pages/ui/orders_page.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -28,20 +29,26 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10,),
-            Row(
-              children: [
-                Expanded(child: Text('Sushi Mushi',style: getFont().copyWith(fontSize: 25),textAlign: TextAlign.center,)),
-                const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.only(right: 20),
-                  child: IconButton(onPressed: (){
+            Padding(
+              padding: const EdgeInsets.only(left: 10,right: 10),
+              child: Row(
+                children: [
+                  Expanded(child: Text('Sushi Mushi',style: getFont().copyWith(fontSize: 25),textAlign: TextAlign.center,)),
+                  const Spacer(),
+                  IconButton(onPressed: (){
 
-                    Navigator.push(context, 
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const OrdersPage()));
+
+                  }, icon: const Icon(Icons.playlist_add_check_circle ,size: 25,)),
+                  IconButton(onPressed: (){
+
+                    Navigator.push(context,
                     MaterialPageRoute(builder: (_) => const CartPage()));
-                    
-                  }, icon: const Icon(Icons.add_shopping_cart,size: 25,)),
-                )
-              ],
+
+                  }, icon: const Icon(Icons.add_shopping_cart,size: 25,))
+                ],
+              ),
             ),
             Container(
               margin: const EdgeInsets.all(20),

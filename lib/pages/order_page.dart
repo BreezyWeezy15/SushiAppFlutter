@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sushi_restaurant/components/fonts.dart';
 import 'package:sushi_restaurant/main.dart';
+import 'package:sushi_restaurant/pages/ui/home_page.dart';
 
 import '../db/sushi_database.dart';
 
@@ -27,6 +28,8 @@ class _OrderPageState extends State<OrderPage> {
   void initState() {
     super.initState();
     sushiDatabase.deleteAllSushi();
+    databaseService.saveOrder(getReceipt());
+
   }
 
   @override
@@ -39,8 +42,21 @@ class _OrderPageState extends State<OrderPage> {
             const SizedBox(height: 30,),
             Text('Delivery Information',style: getSerifFont().copyWith(fontSize: 20)),
             const SizedBox(height: 30,),
-            Expanded(
-              child: Center(child: Text(getReceipt(),style: getSerifFont().copyWith(fontSize: 18),),),
+            Expanded(child: Center(child: Text(getReceipt(),style: getSerifFont().copyWith(fontSize: 18),),)),
+            GestureDetector(
+              onTap: (){
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomePage()));
+              },
+              child: Container(
+                width: MediaQuery.of(context).size.width / 2,
+                height: 40,
+                margin: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: Colors.black45
+                ),
+                child: Center(child: Text('Go Back',style: getSerifFont().copyWith(fontSize: 20,color: Colors.white),),),
+              ),
             )
           ],
         ),
@@ -68,7 +84,6 @@ class _OrderPageState extends State<OrderPage> {
     receipt.writeln('#Personal Info / Address ');
     receipt.writeln();
 
-    receipt.writeln('----------------');
 
     // Full Name
     receipt.write(widget.fullName);

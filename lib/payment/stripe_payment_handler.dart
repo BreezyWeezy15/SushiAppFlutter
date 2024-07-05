@@ -53,7 +53,7 @@ class StripePaymentHandler {
     try {
       await Stripe.instance.presentPaymentSheet();
       if(context.mounted) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) =>  OrderPage(
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) =>  OrderPage(
         total: total,fullName: fullName,email: email,phone: phone,city: city,address: address,
         zipCode: zipCode,data: data,
       )));
