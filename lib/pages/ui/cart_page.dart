@@ -19,6 +19,14 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
+  late Stream<List<SushiData>> _stream;
+
+  @override
+  void initState() {
+    super.initState();
+    _stream = sushiDatabase.getAllSushi();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -62,9 +70,12 @@ class _CartPageState extends State<CartPage> {
               SizedBox(
                 height: MediaQuery.of(context).size.height,
                 child: StreamBuilder<List<SushiData>>(
-                  stream: sushiDatabase.getAllSushi(),
+                  stream: _stream,
                   builder: (context,snapshot){
 
+                    if(snapshot.connectionState == ConnectionState.waiting){
+                      return const Center(child: SpinKitCircle(color: Colors.black,size: 50,),);
+                    }
 
                     if(snapshot.hasError){
                       return  Center(child: Text("No Cart Items${snapshot.error}"),);
@@ -106,9 +117,9 @@ class _CartPageState extends State<CartPage> {
                                           fit: BoxFit.cover,
                                         ),
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Expanded(
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
@@ -128,12 +139,12 @@ class _CartPageState extends State<CartPage> {
                                                       var totalPrice = data[index].total;
                                                       var quantity = data[index].quantity;
 
-                                                      setState(() {
-                                                        quantity = data[index].quantity - 1;
-                                                        totalPrice = totalPrice - data[index].price;
-                                                      });
-
-                                                      print('total $totalPrice');
+                                                      if(quantity >= 2){
+                                                        setState(() {
+                                                          quantity = data[index].quantity - 1;
+                                                          totalPrice = totalPrice - data[index].price;
+                                                        });
+                                                      }
 
                                                       await sushiDatabase.updateSushi(quantity, totalPrice, data[index].id);
                                                     },
@@ -198,7 +209,6 @@ class _CartPageState extends State<CartPage> {
                     } else {
                       return  Center(child: Text("No Cart Items",style: getSerifFont().copyWith(fontSize: 20),),);
                     }
-
                   },
                 ),
               ),

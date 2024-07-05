@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sushi_restaurant/components/colors.dart';
 import 'package:sushi_restaurant/components/fonts.dart';
@@ -22,6 +23,7 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
+  late Future<DocumentSnapshot<Object?>> _future;
   List<Map<String,dynamic>> currentlySelectedAddons = [];
   Map<Map<String,dynamic>,bool?> selectedAddons = {};
   int quantity = 0;
@@ -34,6 +36,8 @@ class _DetailsPageState extends State<DetailsPage> {
       selectedAddons[data as Map<String,dynamic>] = false;
     }
 
+    _future = databaseService.getFoodDetails(widget.documentID);
+
   }
 
 
@@ -42,16 +46,19 @@ class _DetailsPageState extends State<DetailsPage> {
     return SafeArea(
       child: Scaffold(
         body: FutureBuilder<DocumentSnapshot>(
-          future: databaseService.getFoodDetails(widget.documentID),
+          future: _future,
           builder: (context, snapshot) {
+
+            if(snapshot.connectionState == ConnectionState.waiting){
+              return const Center(child: SpinKitCircle(color: Colors.black,size: 50,),);
+            }
 
             if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             }
 
             // LOAD DATA
-            final docs = snapshot.data?.data();
-            Map<String, dynamic> data = docs != null ? docs as Map<String, dynamic> : {};
+            Map<String, dynamic>? docs = snapshot.data?.data() as Map<String, dynamic>?;
 
 
             return Stack(
@@ -62,7 +69,7 @@ class _DetailsPageState extends State<DetailsPage> {
                     children: [
                       FadeInImage(
                         placeholder: const AssetImage('assets/images/sushi.png'),
-                        image: NetworkImage(data['image']),
+                        image: NetworkImage(docs?['image']),
                         width: MediaQuery.of(context).size.width,
                         height: 250,
                         fit: BoxFit.cover,
@@ -74,13 +81,13 @@ class _DetailsPageState extends State<DetailsPage> {
                           children: [
                             const Icon(Icons.star, size: 30, color: Colors.yellowAccent),
                             const SizedBox(width: 5),
-                            Text(data['vote'].toString(), style: getSerifFont().copyWith(fontSize: 20)),
+                            Text(docs!['vote'].toString(), style: getSerifFont().copyWith(fontSize: 20)),
                           ],
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 30, right: 20, top: 20),
-                        child: Text(data['title'].toString(), style: getFont().copyWith(fontSize: 30)),
+                        child: Text(docs['title'].toString(), style: getFont().copyWith(fontSize: 30)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 30, right: 20, top: 20),
@@ -112,7 +119,7 @@ class _DetailsPageState extends State<DetailsPage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 30, right: 20, top: 20),
-                        child: Text(data['description'], style: getSerifFont().copyWith(fontSize: 17)),
+                        child: Text(docs['description'], style: getSerifFont().copyWith(fontSize: 17)),
                       ),
                       const SizedBox(height: 180,)
                     ],
@@ -137,7 +144,7 @@ class _DetailsPageState extends State<DetailsPage> {
                             children: [
                               const SizedBox(width: 20),
                               Text(
-                                '\$${data['price']}',
+                                '\$${docs['price']}',
                                 style: getSerifFont().copyWith(fontSize: 25, color: Colors.white),
                               ),
                               const Spacer(),
@@ -148,7 +155,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                       if (quantity > 0) {
                                         setState(() {
                                           quantity--;
-                                          total = double.parse(data['price'].toString()) * quantity;
+                                          total = double.parse(docs['price'].toString()) * quantity;
                                         });
                                       }
                                     },
@@ -169,7 +176,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                     onTap: () {
                                       setState(() {
                                         quantity++;
-                                        total = double.parse(data['price'].toString()) * quantity;
+                                        total = double.parse(docs['price'].toString()) * quantity;
                                       });
                                     },
                                     child: Container(
@@ -203,12 +210,12 @@ class _DetailsPageState extends State<DetailsPage> {
                               });
 
                               SushiCompanion sushi = SushiCompanion(
-                                  title: Value(data['title']),
-                                  description: Value(data['description']),
-                                  image: Value(data['image']),
+                                  title: Value(docs['title']),
+                                  description: Value(docs['description']),
+                                  image: Value(docs['image']),
                                   quantity: Value(quantity),
                                   total: Value(total),
-                                  price: Value(double.parse(data['price'].toString())),
+                                  price: Value(double.parse(docs['price'].toString())),
                                   additionalInfo: Value(currentlySelectedAddons.toString())
                               );
 
