@@ -209,6 +209,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                 }
                               });
 
+
                               SushiCompanion sushi = SushiCompanion(
                                   title: Value(docs['title']),
                                   description: Value(docs['description']),

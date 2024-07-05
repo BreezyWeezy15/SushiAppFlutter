@@ -3,9 +3,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sushi_restaurant/components/colors.dart';
 import 'package:sushi_restaurant/components/custom_text_field.dart';
 import 'package:sushi_restaurant/components/fonts.dart';
+import 'package:sushi_restaurant/main.dart';
 import 'package:sushi_restaurant/payment/stripe_payment_handler.dart';
 
 import '../../components/delivery_custom_text_field.dart';
+import '../../db/sushi_database.dart';
 
 
 class PaymentPage extends StatefulWidget {
@@ -48,56 +50,62 @@ class _PaymentPageState extends State<PaymentPage> {
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(20),
-          child: Stack(
-            children: [
-              Column(
+          child: FutureBuilder<List<SushiData>>(
+            future: sushiDatabase.getOrdersData(),
+            builder: (context,snapshot){
+              return Stack(
                 children: [
-                  const SizedBox(height: 10,),
-                  Text('Delivery Information',style: getSerifFont().copyWith(fontSize: 20),),
-                  const SizedBox(height: 30,),
-                  DeliveryCustomTextField(hint: 'Full Name', iconData: Icons.person, controller: _fullName),
-                  DeliveryCustomTextField(hint: 'Email', iconData: Icons.email, controller: _email),
-                  DeliveryCustomTextField(hint: 'Phone', iconData: Icons.phone, controller: _phone),
-                  DeliveryCustomTextField(hint: 'City', iconData: Icons.location_history_outlined, controller: _city),
-                  DeliveryCustomTextField(hint: 'Address', iconData: Icons.location_on_sharp, controller: _address),
-                  DeliveryCustomTextField(hint: 'Zip Code', iconData: Icons.location_history_outlined, controller: _zipCode),
+                  Column(
+                    children: [
+                      const SizedBox(height: 10,),
+                      Text('Delivery Information',style: getSerifFont().copyWith(fontSize: 20),),
+                      const SizedBox(height: 30,),
+                      DeliveryCustomTextField(hint: 'Full Name', iconData: Icons.person, controller: _fullName),
+                      DeliveryCustomTextField(hint: 'Email', iconData: Icons.email, controller: _email),
+                      DeliveryCustomTextField(hint: 'Phone', iconData: Icons.phone, controller: _phone),
+                      DeliveryCustomTextField(hint: 'City', iconData: Icons.location_history_outlined, controller: _city),
+                      DeliveryCustomTextField(hint: 'Address', iconData: Icons.location_on_sharp, controller: _address),
+                      DeliveryCustomTextField(hint: 'Zip Code', iconData: Icons.location_history_outlined, controller: _zipCode),
 
-                ],
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: GestureDetector(
-                  onTap: (){
-                    if(areFieldsEmpty()){
-                      Fluttertoast.showToast(msg: 'Fill out the fields');
-                      return;
-                    }
-
-                    // pay with stripe
-                    StripePaymentHandler.stripeMakePayment(
-                        context,
-                        widget.totalPrice,
-                        _fullName.text,
-                        _email.text,
-                        _phone.text,
-                        _city.text,
-                        _address.text,
-                        _zipCode.text);
-
-                  },
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      color: const Color(backgroundColor)
-                    ),
-                    child: Center(child: Text('Finalize',style: getSerifFont().copyWith(fontSize: 20,color: Colors.white),),),
+                    ],
                   ),
-                ),
-              )
-            ],
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: GestureDetector(
+                      onTap: (){
+                        if(areFieldsEmpty()){
+                          Fluttertoast.showToast(msg: 'Fill out the fields');
+                          return;
+                        }
+
+                        // pay with stripe
+                        StripePaymentHandler.data = snapshot.data!;
+                        StripePaymentHandler.context = context;
+                        StripePaymentHandler.total = widget.totalPrice;
+                        StripePaymentHandler.fullName = _fullName.text;
+                        StripePaymentHandler.email = _email.text;
+                        StripePaymentHandler.phone = _phone.text;
+                        StripePaymentHandler.city = _city.text;
+                        StripePaymentHandler.address = _address.text;
+                        StripePaymentHandler.zipCode = _zipCode.text;
+                        StripePaymentHandler.stripeMakePayment();
+
+                      },
+                      child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            color: const Color(backgroundColor)
+                        ),
+                        child: Center(child: Text('Finalize',style: getSerifFont().copyWith(fontSize: 20,color: Colors.white),),),
+                      ),
+                    ),
+                  )
+                ],
+              );
+            },
           ),
         ),
       ),

@@ -4,23 +4,27 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:path/path.dart';
+import 'package:sushi_restaurant/db/sushi_database.dart';
 import 'package:sushi_restaurant/pages/order_page.dart';
 
 import '../utils.dart';
 
 
 class StripePaymentHandler {
-  final TextEditingController _fullName = TextEditingController();
-  final TextEditingController _email = TextEditingController();
-  final TextEditingController _phone = TextEditingController();
-  final TextEditingController _city = TextEditingController();
-  final TextEditingController _address = TextEditingController();
-  final TextEditingController _zipCode = TextEditingController();
+
+  static late final List<SushiData> data;
+  static late final BuildContext context;
+  static late final double total;
+  static late final String fullName;
+  static late final String email;
+  static late final String phone;
+  static late final String city;
+  static late final String address;
+  static late final String zipCode;
 
 
   static Map<String, dynamic>? _paymentIntent;
-  static Future<void> stripeMakePayment(BuildContext context, double total,String fullName,String email,
-      String phone,String city,String address,String zipCode) async {
+  static Future<void> stripeMakePayment() async {
     try {
       _paymentIntent = await _createPaymentIntent(total, 'EUR');
       await Stripe.instance.initPaymentSheet(
@@ -47,8 +51,13 @@ class StripePaymentHandler {
   }
   static _displayPaymentSheet(BuildContext context) async {
     try {
-      var result = await Stripe.instance.presentPaymentSheet();
-      if(context.mounted)  Navigator.push(context, MaterialPageRoute(builder: (_) => const OrderPage()));
+      await Stripe.instance.presentPaymentSheet();
+      if(context.mounted) {
+        Navigator.push(context, MaterialPageRoute(builder: (_) =>  OrderPage(
+        total: total,fullName: fullName,email: email,phone: phone,city: city,address: address,
+        zipCode: zipCode,data: data,
+      )));
+      }
     } on Exception catch (e) {
       if (e is StripeException) {
         print("Stripe $e");

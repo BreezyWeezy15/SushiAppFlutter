@@ -89,7 +89,9 @@ class _CartPageState extends State<CartPage> {
                         itemCount: data.length,
                         itemBuilder: (context, index) {
 
-                          //List<Map<String,dynamic>> addons = getAddons(data, index);
+                          List<Map<String,dynamic>> addons = getAddons(data, index);
+
+                          print('Addons $addons');
 
                           return Dismissible(
                             key: UniqueKey(),
@@ -200,6 +202,20 @@ class _CartPageState extends State<CartPage> {
                                       ),
                                     ],
                                   ),
+                                  const SizedBox(height: 10,),
+                                  Row(
+                                    children: addons.map((e){
+                                      return FilterChip(
+                                          label: Row(
+                                            children: [
+                                              Text(e["name"],style: getSerifFont().copyWith(fontSize: 18),),
+                                              const SizedBox(width: 5,),
+                                              Text(e["price"].toString(),style: getSerifFont().copyWith(fontSize: 18),)
+                                            ],
+                                          ),
+                                          onSelected: (value){});
+                                    }).toList(),
+                                  )
                                 ],
                               ),
                             ),
@@ -232,7 +248,8 @@ class _CartPageState extends State<CartPage> {
                           const Spacer(),
                           GestureDetector(
                             onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (_) =>  PaymentPage(totalPrice: snapshot.data!)));
+                              Navigator.push(context, MaterialPageRoute(builder: (_) =>  PaymentPage(
+                                  totalPrice: snapshot.data!)));
                             },
                             child: Container(
                               width: 100,
@@ -259,11 +276,26 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  List<Map<String,dynamic>> getAddons(List<SushiData>? data,int index){
-    List<Map<String, dynamic>> listOfMaps = [];
-    dynamic jsonObject = jsonDecode(data![index].additionalInfo!);
-    listOfMaps = List<Map<String, dynamic>>.from(jsonObject);
-    return listOfMaps;
+  List<Map<String, dynamic>> getAddons(List<SushiData>? data, int index) {
+    // Print the JSON string to debug
+    print('Raw JSON String: ${data![index].additionalInfo!}');
+
+    try {
+      // Decode the JSON string
+      dynamic jsonObject = jsonDecode(data[index].additionalInfo!);
+
+      // Print the decoded JSON object for debugging
+      print('Decoded JSON Object: $jsonObject');
+
+      // Convert the dynamic object to a list of maps
+      List<Map<String, dynamic>> listOfMaps = List<Map<String, dynamic>>.from(jsonObject);
+
+      // Return the list of maps
+      return listOfMaps;
+    } catch (e) {
+      print('Error decoding JSON: $e');
+      return [];
+    }
   }
 
 }

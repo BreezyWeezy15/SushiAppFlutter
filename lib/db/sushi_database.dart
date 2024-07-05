@@ -19,6 +19,8 @@ class SushiDatabase extends _$SushiDatabase  {
 
     Stream<List<SushiData>> getAllSushi() =>   select(sushi).watch();
 
+    Future<List<SushiData>> getOrdersData() =>   select(sushi).get();
+
     // Insert Operation
     Future<int> insertSushi(SushiCompanion v) async {
        return await into(sushi).insert(v);
