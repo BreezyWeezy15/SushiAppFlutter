@@ -1,7 +1,18 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw hide Uint8List;
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sushi_restaurant/components/fonts.dart';
 import 'package:sushi_restaurant/main.dart';
+import 'package:google_fonts/google_fonts.dart' as google_fonts;
+import 'package:sushi_restaurant/pdf_api.dart';
+
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
@@ -11,6 +22,8 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
+
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -57,15 +70,23 @@ class _OrdersPageState extends State<OrdersPage> {
                                       Text('Ordered At ' ,style: getSerifFont().copyWith(fontSize: 20),),
                                       Text(snapshot.data![index]['date'],style: getSerifFont().copyWith(fontSize: 16),),
                                       const SizedBox(height: 5,),
-                                      Container(
-                                        padding: const EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(16),
-                                          color: Colors.black38
-                                        ),
-                                        child: Center(
-                                          child: Text(snapshot.data![index]['orderID'],style: getSerifFont().copyWith(fontSize: 16,
-                                          color: Colors.white),),
+                                      GestureDetector(
+                                        onTap : () async {
+
+                                           final file = await PdfApi.createPdf(snapshot.data![index]['receipt']);
+                                           await OpenFile.open(file.path);
+
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(16),
+                                            color: Colors.black38
+                                          ),
+                                          child: Center(
+                                            child: Text(snapshot.data![index]['orderID'],style: getSerifFont().copyWith(fontSize: 16,
+                                            color: Colors.white),),
+                                          ),
                                         ),
                                       )
                                     ],
@@ -76,10 +97,10 @@ class _OrdersPageState extends State<OrdersPage> {
                           );
                         },
                       );
-                    } else {
+                    }
+                    else {
                       return  Center(child: Text('No Orders Yet',style: getSerifFont().copyWith(fontSize: 25),),);
                     }
-
 
                   }),
             ],

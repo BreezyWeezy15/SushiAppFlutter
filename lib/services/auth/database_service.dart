@@ -47,6 +47,27 @@ class DatabaseService {
         .set(order);
   }
 
+  Future<List<Map<String, dynamic>>> getCoupons() async {
+    QuerySnapshot<Map<String, dynamic>> snapshot = await _collectionReference.collection('coupons').get();
+    List<Map<String, dynamic>> coupons = snapshot.docs.map((doc) => doc.data()).toList();
+    return coupons;
+  }
+
+  Future addUserCoupon(String coupon,String percent) async {
+
+    var map = <String,dynamic>{};
+    map['coupon'] = coupon;
+    map['percent'] = percent;
+
+    return _collectionReference.collection('UserCoupons').doc(firebaseAuth.currentUser!.uid)
+        .set(map);
+  }
+
+  Future getUserCoupons(String coupon) async {
+    QuerySnapshot<Map<String, dynamic>> snapshot =  await _collectionReference.collection('UserCoupons').get();
+    return snapshot.docs.map((doc) => doc.data()).toList();
+  }
+
   Future<List<Map<String, dynamic>>> getOrders() async {
 
 
@@ -67,11 +88,8 @@ class DatabaseService {
 
   }
 
-
   DatabaseService._privateConstructor();
   static DatabaseService instance = DatabaseService._privateConstructor();
-
-
 
 
 }
