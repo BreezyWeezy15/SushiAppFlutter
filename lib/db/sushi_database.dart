@@ -46,14 +46,14 @@ class SushiDatabase extends _$SushiDatabase  {
       return await delete(sushi).go();
     }
 
-    Future<double> sumTotal() async {
+    Stream<double> sumTotal()  {
       final sumQuery = customSelect(
         'SELECT SUM(total) AS totalSum FROM sushi;',
         readsFrom: {sushi},
       );
 
-      final result = await sumQuery.map((row) => row.readDouble('totalSum')).getSingleOrNull();
-      return result ?? 0.0;
+      final result =  sumQuery.map((row) => row.readDouble('totalSum')).watchSingle();
+      return result;
     }
 
 

@@ -80,12 +80,12 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Expanded(child: Text('Sushi Mushi',style: getFont().copyWith(fontSize: 25),textAlign: TextAlign.center,)),
                   const Spacer(),
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const CouponPage()));
-                    },
-                    child: Image.asset('assets/images/coupon.png',width: 25,height: 25,),
-                  ),
+                  // GestureDetector(
+                  //   onTap: (){
+                  //     Navigator.push(context, MaterialPageRoute(builder: (_) => const CouponPage()));
+                  //   },
+                  //   child: Image.asset('assets/images/coupon.png',width: 25,height: 25,),
+                  // ),
                   IconButton(onPressed: (){
 
                     Navigator.push(context,
@@ -113,106 +113,14 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(25),
+                      padding: const EdgeInsets.all(45),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('Get 32% Promo',style: getSerifFont().copyWith(fontSize: 25,color: Colors.white),),
-                          const SizedBox(height: 20,),
-                          FutureBuilder<List<Map<String, dynamic>>>(
-                            future: databaseService.getCoupons(),
-                            builder: (context, snapshot) {
-
-                              var docs =  snapshot.data;
-
-                              return GestureDetector(
-                                onTap: () {
-                                  // redeem
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: Text('Redeem Code', style: getSerifFont()),
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            TextField(
-                                              controller: _controller,
-                                              decoration: InputDecoration(
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(16),
-                                                  borderSide: const BorderSide(color: Colors.black),
-                                                ),
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(16),
-                                                  borderSide: const BorderSide(color: Colors.black45),
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 10),
-                                            GestureDetector(
-                                              onTap: () async {
-                                                var userCoupon = _controller.text;
-                                                if (userCoupon.isEmpty) {
-                                                  Fluttertoast.showToast(msg: 'Please insert your coupon');
-                                                  return;
-                                                }
-
-                                                bool couponRedeemed = false;
-
-                                                docs?.forEach((doc) {
-                                                  if (doc['coupon'].toString().trim() == userCoupon.trim()) {
-                                                    if(doc['isExpired'] == false){
-                                                      Fluttertoast.showToast(msg: 'Coupon Redeemed');
-                                                      databaseService.addUserCoupon(
-                                                        userCoupon,doc['percent']
-                                                      );
-                                                      _controller.clear();
-                                                      couponRedeemed = true;
-                                                      Navigator.pop(context);
-                                                    }
-                                                  }
-                                                });
-
-                                                if (!couponRedeemed) {
-                                                  Fluttertoast.showToast(msg: 'Invalid Coupon');
-                                                }
-                                              },
-                                              child: Container(
-                                                width: MediaQuery.of(context).size.width / 2,
-                                                height: 40,
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(16),
-                                                  color: Colors.black38,
-                                                ),
-                                                child: Center(child: Text('Submit', style: getSerifFont())),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(15),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30),
-                                    color: const Color(buttonColor),
-                                  ),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text('Redeem', style: getSerifFont().copyWith(fontSize: 20, color: Colors.white)),
-                                      IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward, color: Colors.white, size: 30)),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          )
+                          Text('Get % Promos',style: getSerifFont().copyWith(fontSize: 25,color: Colors.white),),
+                          Text('Redeem & Enjoy Cheaper Prices',style: getSerifFont().copyWith(fontSize: 17,color: Colors.white),
+                          textAlign: TextAlign.center,),
                         ],
                       ),
                     ),
@@ -343,3 +251,127 @@ class _HomePageState extends State<HomePage> {
         documentID: documentID)));
   }
 }
+
+
+/*
+Container(
+              margin: const EdgeInsets.all(20),
+              height:  190,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: const Color(backgroundColor)
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(25),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text('Get 32% Promo',style: getSerifFont().copyWith(fontSize: 25,color: Colors.white),),
+                          const SizedBox(height: 20,),
+                          FutureBuilder<List<Map<String, dynamic>>>(
+                            future: databaseService.getCoupons(),
+                            builder: (context, snapshot) {
+
+                              var docs =  snapshot.data;
+
+                              return GestureDetector(
+                                onTap: () {
+                                  // redeem
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: Text('Redeem Code', style: getSerifFont()),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            TextField(
+                                              controller: _controller,
+                                              decoration: InputDecoration(
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(16),
+                                                  borderSide: const BorderSide(color: Colors.black),
+                                                ),
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(16),
+                                                  borderSide: const BorderSide(color: Colors.black45),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            GestureDetector(
+                                              onTap: () async {
+                                                var userCoupon = _controller.text;
+                                                if (userCoupon.isEmpty) {
+                                                  Fluttertoast.showToast(msg: 'Please insert your coupon');
+                                                  return;
+                                                }
+
+                                                bool couponRedeemed = false;
+
+                                                docs?.forEach((doc) {
+                                                  if (doc['coupon'].toString().trim() == userCoupon.trim()) {
+                                                    if(doc['isExpired'] == false){
+                                                      Fluttertoast.showToast(msg: 'Coupon Redeemed');
+                                                      databaseService.addUserCoupon(
+                                                        userCoupon,doc['percent']
+                                                      );
+                                                      _controller.clear();
+                                                      couponRedeemed = true;
+                                                      Navigator.pop(context);
+                                                    }
+                                                  }
+                                                });
+
+                                                if (!couponRedeemed) {
+                                                  Fluttertoast.showToast(msg: 'Invalid Coupon');
+                                                }
+                                              },
+                                              child: Container(
+                                                width: MediaQuery.of(context).size.width / 2,
+                                                height: 40,
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(16),
+                                                  color: Colors.black38,
+                                                ),
+                                                child: Center(child: Text('Submit', style: getSerifFont())),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30),
+                                    color: const Color(buttonColor),
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('Redeem', style: getSerifFont().copyWith(fontSize: 20, color: Colors.white)),
+                                      IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward, color: Colors.white, size: 30)),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Image.asset("assets/images/sushi.png",width: 120,height: 120,),
+                  const SizedBox(width: 20,)
+                ],
+              ),
+            ),
+ */

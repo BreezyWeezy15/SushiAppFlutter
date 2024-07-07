@@ -1,6 +1,4 @@
 
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
@@ -36,14 +34,20 @@ class DatabaseService {
   }
 
   saveOrder(String receipt) async {
+
+    var docID = DateTime.now().microsecondsSinceEpoch.toString();
+
     Map<String,dynamic> order = {};
+
+    order['docID'] = docID;
+    order['isConfirmed'] = false;
     order['orderID'] = '#${DateTime.now().microsecondsSinceEpoch}';
     order['date'] = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
     order['receipt'] = receipt;
     _collectionReference.collection('Orders')
         .doc(firebaseAuth.currentUser!.uid)
         .collection('Receipts')
-        .doc(DateTime.now().microsecondsSinceEpoch.toString())
+        .doc(docID)
         .set(order);
   }
 
@@ -68,22 +72,32 @@ class DatabaseService {
     return snapshot.docs.map((doc) => doc.data()).toList();
   }
 
-  Future<List<Map<String, dynamic>>> getOrders() async {
-
-
-    List<Map<String, dynamic>> listOfMaps = [];
-
-    QuerySnapshot<Map<String, dynamic>> snapshot = await _collectionReference.collection('Orders')
+  Stream<List<Map<String, dynamic>>> getOrders() {
+    return _collectionReference
+        .collection('Orders')
         .doc(firebaseAuth.currentUser!.uid)
         .collection('Receipts')
-        .get();
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  }
 
-    for (var doc in snapshot.docs) {
-      // Add the document data to the list
-      listOfMaps.add(doc.data());
-    }
+  Future deleteOrder(String docID) async {
+    return await _collectionReference
+        .collection('Orders')
+        .doc(firebaseAuth.currentUser!.uid)
+        .collection('Receipts')
+        .doc(docID)
+        .delete();
+  }
 
-    return listOfMaps;
+  Future updateStatus(String docID, bool isConfirmed) async {
+
+    
+    await _collectionReference.collection('Orders')
+        .doc(firebaseAuth.currentUser!.uid)
+        .collection('Receipts')
+        .doc(docID)
+        .update({'isConfirmed' : isConfirmed});
 
 
   }

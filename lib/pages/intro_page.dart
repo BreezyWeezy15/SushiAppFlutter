@@ -54,6 +54,7 @@ class _IntroPageState extends State<IntroPage> {
                   ),
                 ),
               ),
+              const SizedBox(height: 10,),
               SizedBox(
                 height: 50,
                 child: CustomButton(

@@ -19,12 +19,27 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
+
+  late Future<List<SushiData>> _future;
   final TextEditingController _fullName = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _phone = TextEditingController();
   final TextEditingController _city = TextEditingController();
   final TextEditingController _address = TextEditingController();
   final TextEditingController _zipCode = TextEditingController();
+
+
+  @override
+  void initState() {
+    super.initState();
+    _future = sushiDatabase.getOrdersData();
+    _fullName.text = "Taki Eddine";
+    _email.text = "eddinetaki087@gmail.com";
+    _phone.text = "+213777309438";
+    _city.text = "Tebessa";
+    _address.text = "Rue de larocade";
+    _zipCode.text = "75000";
+  }
 
   bool areFieldsEmpty() {
     final controllers = [
@@ -51,7 +66,7 @@ class _PaymentPageState extends State<PaymentPage> {
         body: Padding(
           padding: const EdgeInsets.all(20),
           child: FutureBuilder<List<SushiData>>(
-            future: sushiDatabase.getOrdersData(),
+            future: _future,
             builder: (context,snapshot){
               return Stack(
                 children: [
@@ -80,6 +95,8 @@ class _PaymentPageState extends State<PaymentPage> {
                           return;
                         }
 
+                        print('Values ${snapshot.data}');
+
                         // pay with stripe
                         StripePaymentHandler.data = snapshot.data!;
                         StripePaymentHandler.context = context;
@@ -102,7 +119,7 @@ class _PaymentPageState extends State<PaymentPage> {
                         child: Center(child: Text('Finalize',style: getSerifFont().copyWith(fontSize: 20,color: Colors.white),),),
                       ),
                     ),
-                  )
+                  ),
                 ],
               );
             },

@@ -232,9 +232,17 @@ class _CartPageState extends State<CartPage> {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                child: FutureBuilder<double>(
-                  future: sushiDatabase.sumTotal(),
+                child: StreamBuilder<double>(
+                  stream: sushiDatabase.sumTotal(),
                   builder: (context,snapshot){
+
+                    double? due = 0.0;
+                    if(snapshot.data == null){
+                      due = 0.0;
+                    } else {
+                      due = snapshot.data;
+                    }
+
                     return Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -244,10 +252,15 @@ class _CartPageState extends State<CartPage> {
                       child: Row(
                         children: [
                           Text('Due :' ,style: getSerifFont().copyWith(fontSize: 20,color: Colors.white),),
-                          Text(' \$${snapshot.data}',style: getSerifFont().copyWith(fontSize: 20,color: Colors.white),),
+                          Text('\$$due',style: getSerifFont().copyWith(fontSize: 20,color: Colors.white),),
                           const Spacer(),
                           GestureDetector(
                             onTap: (){
+                              if(due == 0.0){
+                                Fluttertoast.showToast(msg: 'No items to pay for');
+                                return;
+                              }
+
                               Navigator.push(context, MaterialPageRoute(builder: (_) =>  PaymentPage(
                                   totalPrice: snapshot.data!)));
                             },
