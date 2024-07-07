@@ -40,45 +40,49 @@ class _OrderPageState extends State<OrderPage> {
   Widget build(BuildContext context) {
     return  SafeArea(
       child: Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 30,),
-            Text('Delivery Information',style: getSerifFont().copyWith(fontSize: 20)),
-            const SizedBox(height: 30,),
-            Expanded(child: Center(child: Text(getReceipt(),style: getSerifFont().copyWith(fontSize: 18),),)),
-            GestureDetector(
-              onTap: () async {
-                final file = await PdfApi.createPdf(getReceipt());
-                await OpenFile.open(file.path);
-              },
-              child: Container(
-                width: MediaQuery.of(context).size.width / 2,
-                height: 40,
-                margin: const EdgeInsets.only(left: 20,right: 20),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: Colors.black45
-                ),
-                child: Center(child: Text('Show Receipt',style: getSerifFont().copyWith(fontSize: 20,color: Colors.white),),),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 30,),
+              Text('Delivery Information',style: getSerifFont().copyWith(fontSize: 20)),
+              const SizedBox(height: 30,),
+              SingleChildScrollView(
+                child: Expanded(child: Center(child: Text(getReceipt(),style: getSerifFont().copyWith(fontSize: 18),),)),
               ),
-            ),
-            GestureDetector(
-              onTap: (){
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomePage()));
-              },
-              child: Container(
-                width: MediaQuery.of(context).size.width / 2,
-                height: 40,
-                margin: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: Colors.black45
+              GestureDetector(
+                onTap: () async {
+                  final file = await PdfApi.createPdf(getReceipt());
+                  await OpenFile.open(file.path);
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width / 2,
+                  height: 40,
+                  margin: const EdgeInsets.only(left: 20,right: 20),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.black45
+                  ),
+                  child: Center(child: Text('Show Receipt',style: getSerifFont().copyWith(fontSize: 20,color: Colors.white),),),
                 ),
-                child: Center(child: Text('Go Back',style: getSerifFont().copyWith(fontSize: 20,color: Colors.white),),),
               ),
-            )
-          ],
+              GestureDetector(
+                onTap: (){
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomePage()));
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width / 2,
+                  height: 40,
+                  margin: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.black45
+                  ),
+                  child: Center(child: Text('Go Back',style: getSerifFont().copyWith(fontSize: 20,color: Colors.white),),),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
