@@ -7,7 +7,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sushi_restaurant/components/colors.dart';
 import 'package:sushi_restaurant/components/fonts.dart';
+import 'package:sushi_restaurant/db/product_list_converter.dart';
 import 'package:sushi_restaurant/db/sushi_database.dart';
+import 'package:sushi_restaurant/models/product.dart';
 import 'package:sushi_restaurant/pages/ui/cart_page.dart';
 import '../../main.dart';
 
@@ -24,7 +26,7 @@ class DetailsPage extends StatefulWidget {
 
 class _DetailsPageState extends State<DetailsPage> {
   late Future<DocumentSnapshot<Object?>> _future;
-  List<Map<String,dynamic>> currentlySelectedAddons = [];
+  List<Product> currentlySelectedAddons = [];
   Map<Map<String,dynamic>,bool?> selectedAddons = {};
   int quantity = 0;
   double total = 0.0;
@@ -205,7 +207,8 @@ class _DetailsPageState extends State<DetailsPage> {
                               currentlySelectedAddons.clear();
                               selectedAddons.forEach((key, value) {
                                 if (value == true) {
-                                  currentlySelectedAddons.add(key);
+                                  print('Values ' + key.toString());
+                                  currentlySelectedAddons.add(Product(price: double.parse(key['price'].toString()), name: key['name']));
                                 }
                               });
 
@@ -217,7 +220,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                   quantity: Value(quantity),
                                   total: Value(total),
                                   price: Value(double.parse(docs['price'].toString())),
-                                  additionalInfo: Value(currentlySelectedAddons.toString())
+                                  additionalInfo: Value(ProductListConverter().toSql(currentlySelectedAddons))
                               );
 
                               int result = await sushiDatabase.insertSushi(sushi);

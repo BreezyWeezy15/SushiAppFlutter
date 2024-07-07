@@ -1,14 +1,16 @@
-import 'dart:convert';
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sushi_restaurant/components/colors.dart';
 import 'package:sushi_restaurant/components/fonts.dart';
+import 'package:sushi_restaurant/db/product_list_converter.dart';
 import 'package:sushi_restaurant/main.dart';
 import 'package:sushi_restaurant/pages/ui/payment_page.dart';
 
 import '../../db/sushi_database.dart';
+import '../../models/product.dart';
 
 
 class CartPage extends StatefulWidget {
@@ -89,9 +91,7 @@ class _CartPageState extends State<CartPage> {
                         itemCount: data.length,
                         itemBuilder: (context, index) {
 
-                          List<Map<String,dynamic>> addons = getAddons(data, index);
-
-                          print('Addons $addons');
+                          List<Product> addons = const ProductListConverter().fromSql(data[index].additionalInfo!);
 
                           return Dismissible(
                             key: UniqueKey(),
@@ -203,18 +203,22 @@ class _CartPageState extends State<CartPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 10,),
-                                  Row(
-                                    children: addons.map((e){
-                                      return FilterChip(
-                                          label: Row(
-                                            children: [
-                                              Text(e["name"],style: getSerifFont().copyWith(fontSize: 18),),
-                                              const SizedBox(width: 5,),
-                                              Text(e["price"].toString(),style: getSerifFont().copyWith(fontSize: 18),)
-                                            ],
-                                          ),
-                                          onSelected: (value){});
-                                    }).toList(),
+                                  Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                       mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                       children: addons.map((e){
+                                         return FilterChip(
+                                             label: Row(
+                                               children: [
+                                                 Text(e.name,style: getSerifFont().copyWith(fontSize: 18),),
+                                                 const SizedBox(width: 5,),
+                                                 Text('\$${e.price}',style: getSerifFont().copyWith(fontSize: 18),)
+                                               ],
+                                             ),
+                                             onSelected: (value){});
+                                       }).toList(),
+                                    ),
                                   )
                                 ],
                               ),
@@ -289,26 +293,6 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  List<Map<String, dynamic>> getAddons(List<SushiData>? data, int index) {
-    // Print the JSON string to debug
-    print('Raw JSON String: ${data![index].additionalInfo!}');
-
-    try {
-      // Decode the JSON string
-      dynamic jsonObject = jsonDecode(data[index].additionalInfo!);
-
-      // Print the decoded JSON object for debugging
-      print('Decoded JSON Object: $jsonObject');
-
-      // Convert the dynamic object to a list of maps
-      List<Map<String, dynamic>> listOfMaps = List<Map<String, dynamic>>.from(jsonObject);
-
-      // Return the list of maps
-      return listOfMaps;
-    } catch (e) {
-      print('Error decoding JSON: $e');
-      return [];
-    }
-  }
-
 }
+
+

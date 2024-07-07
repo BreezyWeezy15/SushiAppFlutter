@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:sushi_restaurant/components/fonts.dart';
+import 'package:sushi_restaurant/db/product_list_converter.dart';
 import 'package:sushi_restaurant/main.dart';
+import 'package:sushi_restaurant/models/product.dart';
 import 'package:sushi_restaurant/pages/ui/home_page.dart';
 
 import '../db/sushi_database.dart';
@@ -120,11 +122,28 @@ class _OrderPageState extends State<OrderPage> {
     receipt.write('${widget.address} ${widget.city} ${widget.zipCode}');
     receipt.writeln();
 
+
+    receipt.writeln();
     receipt.writeln('----------------');
+    receipt.writeln('Food');
+
 
     // Ordered Food
     for (var data in widget.data) {
         receipt.writeln('x${data.quantity} ${data.title}');
+    }
+
+    receipt.writeln();
+    receipt.writeln('----------------');
+    receipt.writeln('Addons');
+    receipt.writeln();
+
+
+    for(var data in widget.data){
+       List<Product> list = const ProductListConverter().fromSql(data.additionalInfo!);
+       list.forEach((v){
+         receipt.writeln('${v.name}  \$${v.price}');
+       });
     }
 
     return receipt.toString();

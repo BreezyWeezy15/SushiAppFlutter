@@ -1,6 +1,7 @@
 
 
 import 'package:drift/drift.dart';
+import 'package:sushi_restaurant/db/product_list_converter.dart';
 
 class Sushi extends Table {
 
@@ -11,6 +12,6 @@ class Sushi extends Table {
   IntColumn get quantity => integer()();
   RealColumn get total => real()();
   RealColumn get price => real()();
-  TextColumn get additionalInfo => text().nullable()();
+  TextColumn get additionalInfo => text().nullable().map(const ProductListConverter())();
 
 }
