@@ -204,20 +204,26 @@ class _CartPageState extends State<CartPage> {
                                   ),
                                   const SizedBox(height: 10,),
                                   Container(
-                                    padding: const EdgeInsets.all(8.0),
+                                    padding: const EdgeInsets.only(left: 10),
+                                    height: addons.isEmpty ? 0 : 60,
                                     child: Row(
-                                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                       children: addons.map((e){
-                                         return FilterChip(
-                                             label: Row(
-                                               children: [
-                                                 Text(e.name,style: getSerifFont().copyWith(fontSize: 18),),
-                                                 const SizedBox(width: 5,),
-                                                 Text('\$${e.price}',style: getSerifFont().copyWith(fontSize: 18),)
-                                               ],
-                                             ),
-                                             onSelected: (value){});
-                                       }).toList(),
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: addons.map((addon){
+                                        return FilterChip(
+                                          label: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(addon.name),
+                                              Text(' \$${addon.price}')
+                                            ],
+                                          ),
+                                          shape: const StadiumBorder(),
+                                          onSelected: (value){},
+                                          labelStyle: const TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 12
+                                          ),);
+                                      }).toList(),
                                     ),
                                   )
                                 ],
